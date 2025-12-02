@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Solicite um orçamento personalizado para embalagens sustentáveis - EcoBytes">
+    <title>Solicitar Orçamento - Ecobytes</title>
+    <link rel="shortcut icon" href="../Assets/Logo (1).png" type="image/png">
+
+    <!-- Otimizações de performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Fontes e ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../CSS/styles.css">
+    <link rel="stylesheet" href="../CSS/orcamento.css">
+</head>
+
+<body>
+    <!-- Navegação por teclado -->
+    <a href="#main-content" class="skip-link">Pular para conteúdo principal</a>
+
+    <header class="header">
+        <nav class="nav" aria-label="Navegação principal">
+            <div class="nav-container">
+                <!-- Logo com link para página principal -->
+                <a href="../index.html" class="logo">
+                    <img src="../Assets/Logo (1).png" alt="Logo Ecobytes">
+                    <span>Ecobytes</span>
+                </a>
+
+                <!-- Botão do menu hambúrguer para mobile -->
+                <button class="menu-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav-menu">
+                    <span class="hamburger"></span>
+                </button>
+
+                <!-- Menu de navegação principal -->
+                <ul class="nav-menu" id="nav-menu" role="menubar">
+                    <li role="none"><a href="../index.html#home" role="menuitem">Início</a></li>
+                    <li role="none"><a href="../index.html#sobre" role="menuitem">Sobre Nós</a></li>
+                    <li role="none"><a href="../index.html#produtos" role="menuitem">Produtos</a></li>
+                    <li role="none"><a href="../index.html#contato" role="menuitem">Contato</a></li>
+                </ul>
+
+                <!-- Botão de orçamento (visível apenas no desktop) -->
+                <div class="btn-group">
+                    <a href="./orcamento.html" class="btn btn-secondary" target="_self">Orçamento</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <section class="orcamento-hero">
+            <div class="container">
+                <div class="orcamento-header">
+                    <h1>Solicite seu Orçamento</h1>
+                    <p>Preencha o formulário abaixo e em breve nossa equipe entrará em contato com você</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="formulario-orcamento">
+            <div class="container">
+                <form class="form-orcamento" id="formOrcamento">
+                    <h2 class="form-title">Informações para Orçamento</h2>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nome">Nome Completo *</label>
+                            <input type="text" id="nome" name="nome" required placeholder="Digite seu nome completo">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">E-mail *</label>
+                            <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefone">Telefone *</label>
+                            <input type="tel" id="telefone" name="telefone" required placeholder="(11) 99999-9999">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="documento">CPF ou CNPJ *</label>
+                            <input type="text" id="documento" name="documento" required
+                                placeholder="Digite seu CPF ou CNPJ">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="endereco">Endereço Completo *</label>
+                            <input type="text" id="endereco" name="endereco" required
+                                placeholder="Rua, número, bairro, cidade - Estado">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="produto">Produto Desejado *</label>
+                            <select id="produto" name="produto" required>
+                                <option value="">Selecione um produto</option>
+                                <optgroup label="Produtos por Kg">
+                                    <option value="sacolas">Sacolas Biodegradáveis</option>
+                                    <option value="embalagens">Embalagens Biodegradáveis</option>
+                                    <option value="caixas-empacotamento">Caixas para Empacotamento</option>
+                                    <option value="embalagens-secundarias">Embalagens Secundárias</option>
+                                    <option value="embalagens-plasticas">Embalagens Plásticas PCR</option>
+                                </optgroup>
+                                <optgroup label="Produtos por Pacote (100 unidades)">
+                                    <option value="copos">Copos Biodegradáveis</option>
+                                    <option value="canudos">Canudos Biodegradáveis</option>
+                                    <option value="pratos">Pratos Compostáveis</option>
+                                    <option value="talheres">Talheres Compostáveis</option>
+                                    <option value="potes">Potes Compostáveis</option>
+                                </optgroup>
+                                <optgroup label="Outros Produtos">
+                                    <option value="variados">Produtos Variados</option>
+                                    <option value="personalizado">Produto Personalizado</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="quantidade">Quantidade *</label>
+                            <input type="number" id="quantidade" name="quantidade" required min="1"
+                                placeholder="Ex: 10">
+                            <small class="unidade-info" id="unidadeInfo">Informe a quantidade</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="unidade">Unidade de Medida</label>
+                            <select id="unidade" name="unidade">
+                                <option value="kg">Kg</option>
+                                <option value="pacotes">Pacotes (100 un)</option>
+                                <option value="unidades">Unidades</option>
+                                <option value="caixas">Caixas</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="personalizacao">Necessita Personalização?</label>
+                            <select id="personalizacao" name="personalizacao">
+                                <option value="nao">Não</option>
+                                <option value="sim-cor">Sim - Apenas cor</option>
+                                <option value="sim-logo">Sim - Logo da marca</option>
+                                <option value="sim-completa">Sim - Personalização completa</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="prazo">Prazo de Entrega Desejado</label>
+                            <input type="text" id="prazo" name="prazo" placeholder="Ex: 15 dias, 1 mês, urgente">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="mensagem">Observações Adicionais</label>
+                            <textarea id="mensagem" name="mensagem" rows="6"
+                                placeholder="Descreva suas necessidades específicas..."></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="anexos">Anexar Arquivos (Opcional)</label>
+                            <input type="file" id="anexos" name="anexos" multiple
+                                accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-large" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i>
+                            Solicitar Orçamento
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i>
+                            Limpar Formulário
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <a href="../index.html" class="logo">
+                        <img src="../Assets/Logo (1).png" alt="Logo Ecobytes">
+                        <span>Ecobytes</span>
+                    </a>
+                    <p>Cuidar do futuro começa hoje.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/ecobytes_oficial" target="_blank" rel="noopener noreferrer"
+                            aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" aria-label="Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="../index.html#home">Início</a></li>
+                        <li><a href="../index.html#sobre">Sobre Nós</a></li>
+                        <li><a href="../index.html#produtos">Produtos</a></li>
+                        <li><a href="../index.html#contato">Contato</a></li>
+                        <li><a href="../Pages/termos.html#termos">Políticas de Privacidade</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> contato@ecobytes.com</p>
+                        <p><i class="fas fa-phone"></i> (11) 95157-2452</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Rua das Sustentáveis, 770 - Vila Ecos</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Essencial Code. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+<!-- JavaScript -->
+
+    <script src="../Javascript/orcamento.js"></script>
+</body>
+
+</html>
