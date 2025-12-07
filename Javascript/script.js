@@ -9,6 +9,7 @@ class EcoBytesApp {
         this.setupSmoothScrolling();
         this.setupIntersectionObserver();
         this.setupMobileMenu(); // Menu responsivo adicionado
+        this.setupDarkMode(); // Modo noturno
     }
 
     setupEventListeners() {
@@ -36,50 +37,45 @@ class EcoBytesApp {
     setupMobileMenu() {
         const menuToggle = document.querySelector('.menu-toggle');
         const navMenu = document.querySelector('.nav-menu');
-        const body = document.body;
         
-        if (menuToggle) {
-            const overlay = document.createElement('div');
+        if (!menuToggle || !navMenu) return;
+        
+        const body = document.body;
+        let overlay = document.querySelector('.nav-overlay');
+        
+        if (!overlay) {
+            overlay = document.createElement('div');
             overlay.className = 'nav-overlay';
-            document.body.appendChild(overlay);
-            
-            menuToggle.addEventListener('click', () => {
-                const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
-                
-                menuToggle.setAttribute('aria-expanded', !isExpanded);
-                navMenu.classList.toggle('active');
-                overlay.classList.toggle('active');
-                body.style.overflow = isExpanded ? '' : 'hidden';
-            });
-            
-            overlay.addEventListener('click', () => {
-                this.closeMobileMenu(menuToggle, navMenu, overlay, body);
-            });
-            
-            // Fecha menu ao clicar em links
-            const menuLinks = navMenu.querySelectorAll('a');
-            menuLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth <= 768) {
-                        this.closeMobileMenu(menuToggle, navMenu, overlay, body);
-                    }
-                });
-            });
-            
-            // Fecha menu ao redimensionar para desktop
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 768) {
-                    this.closeMobileMenu(menuToggle, navMenu, overlay, body);
-                }
-            });
+            body.appendChild(overlay);
         }
-    }
-
-    closeMobileMenu(menuToggle, navMenu, overlay, body) {
-        menuToggle.setAttribute('aria-expanded', 'false');
-        navMenu.classList.remove('active');
-        overlay.classList.remove('active');
-        body.style.overflow = '';
+        
+        const closeMenu = () => {
+            menuToggle.setAttribute('aria-expanded', 'false');
+            navMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            body.style.overflow = '';
+        };
+        
+        menuToggle.addEventListener('click', () => {
+            const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+            menuToggle.setAttribute('aria-expanded', !isExpanded);
+            navMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            body.style.overflow = isExpanded ? '' : 'hidden';
+        });
+        
+        overlay.addEventListener('click', closeMenu);
+        navMenu.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A' && window.innerWidth <= 768) closeMenu();
+        });
+        
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (window.innerWidth > 768) closeMenu();
+            }, 150);
+        });
     }
 
     handleNewsletterSubmit(event) {
@@ -162,21 +158,7 @@ class EcoBytesApp {
     }
 
     handleProductHover(card, isHovering) {
-        const productImage = card.querySelector('.product-image img');
-        
-        if (isHovering) {
-            card.style.transform = 'translateY(-8px)';
-            card.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.2)';
-            if (productImage) {
-                productImage.style.transform = 'scale(1.1)';
-            }
-        } else {
-            card.style.transform = 'translateY(0)';
-            card.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-            if (productImage) {
-                productImage.style.transform = 'scale(1)';
-            }
-        }
+        card.classList.toggle('hover-active', isHovering);
     }
 
     trackBudgetButtonClick(event) {
@@ -192,20 +174,14 @@ class EcoBytesApp {
     }
 
     setupSmoothScrolling() {
-        const links = document.querySelectorAll('a[href^="#"]');
-        
-        links.forEach(link => {
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
             link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                
-                if (targetElement) {
-                    const headerHeight = document.querySelector('.header').offsetHeight;
-                    const targetPosition = targetElement.offsetTop - headerHeight - 20;
-                    
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
                     window.scrollTo({
-                        top: targetPosition,
+                        top: target.offsetTop - headerHeight - 20,
                         behavior: 'smooth'
                     });
                 }
@@ -215,21 +191,52 @@ class EcoBytesApp {
 
     setupIntersectionObserver() {
         const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
+            threshold: 0.15,
+            rootMargin: '0px 0px -80px 0px'
         };
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('animate-in');
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
-        const elementsToAnimate = document.querySelectorAll('.benefit-card, .product-card, .about-feature');
-        elementsToAnimate.forEach(element => {
-            observer.observe(element);
+        const elementsToAnimate = document.querySelectorAll('.benefit-card, .product-card, .about-feature, .newsletter-content, .cta-content');
+        elementsToAnimate.forEach((element, index) => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(30px)';
+            setTimeout(() => {
+                observer.observe(element);
+            }, index * 50);
+        });
+    }
+
+    // Configuração do modo noturno
+    setupDarkMode() {
+        const toggleDarkMode = () => {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+        };
+
+        // Aplica preferência salva
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Event listeners para ambos os botões
+        ['dark-mode-toggle', 'dark-mode-toggle-mobile'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.addEventListener('click', toggleDarkMode);
+        });
+
+        // Sincroniza entre abas
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'darkMode') {
+                document.body.classList.toggle('dark-mode', e.newValue === 'enabled');
+            }
         });
     }
 }

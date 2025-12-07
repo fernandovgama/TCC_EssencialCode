@@ -22,6 +22,7 @@ class OrcamentoForm {
         this.setupEventListeners();
         this.updateUnidadeInfo();
         this.setupMobileMenu();
+        this.setupDarkMode();
         
         // Salva o HTML original do botão
         this.originalButtonHTML = this.submitButton.innerHTML;
@@ -51,10 +52,35 @@ class OrcamentoForm {
             this.formatarTelefone(e.target);
         });
 
-        // Formatação de CPF/CNPJ
-        document.getElementById('documento').addEventListener('input', (e) => {
-            this.formatarDocumento(e.target);
-        });
+        // Formatação e validação de CPF/CNPJ
+        const documentoInput = document.getElementById('documento');
+        if (documentoInput) {
+            documentoInput.addEventListener('input', (e) => {
+                this.formatarDocumento(e.target);
+            });
+            documentoInput.addEventListener('blur', (e) => {
+                this.validarCampoDocumento(e.target);
+            });
+        }
+
+        // Validação de email
+        const emailInput = document.getElementById('email');
+        if (emailInput) {
+            emailInput.addEventListener('blur', (e) => {
+                this.validarCampoEmail(e.target);
+            });
+        }
+
+        // Formatação e busca de CEP
+        const cepInput = document.getElementById('cep');
+        if (cepInput) {
+            cepInput.addEventListener('input', (e) => {
+                this.formatarCEP(e.target);
+            });
+            cepInput.addEventListener('blur', (e) => {
+                this.buscarCEP(e.target.value);
+            });
+        }
 
         // Reset do formulário
         this.form.addEventListener('reset', () => {
@@ -63,60 +89,172 @@ class OrcamentoForm {
     }
 
     /**
+     * Valida campo de email visualmente
+     */
+    validarCampoEmail(input) {
+        const email = input.value.trim();
+        const emailStatus = input.nextElementSibling;
+        
+        if (!email) return;
+        
+        if (!this.validarEmail(email)) {
+            input.style.borderColor = '#dc3545';
+            input.style.backgroundColor = '#fff5f5';
+            if (emailStatus && emailStatus.classList.contains('email-status')) {
+                emailStatus.textContent = 'E-mail inválido';
+                emailStatus.style.color = '#dc3545';
+            }
+        } else {
+            input.style.borderColor = '#38A169';
+            input.style.backgroundColor = '#f0fff4';
+            if (emailStatus && emailStatus.classList.contains('email-status')) {
+                emailStatus.textContent = 'E-mail válido';
+                emailStatus.style.color = '#38A169';
+            }
+        }
+    }
+
+    /**
+     * Valida campo de documento visualmente
+     */
+    validarCampoDocumento(input) {
+        const documento = input.value;
+        const docLimpo = documento.replace(/\D/g, '');
+        const docStatus = input.nextElementSibling;
+        
+        if (!documento) return;
+        
+        let mensagem = '';
+        let valido = false;
+        
+        if (docLimpo.length === 11) {
+            valido = this.validarCPF(docLimpo);
+            mensagem = valido ? 'CPF válido' : 'CPF inválido';
+        } else if (docLimpo.length === 14) {
+            valido = this.validarCNPJ(docLimpo);
+            mensagem = valido ? 'CNPJ válido' : 'CNPJ inválido';
+        } else {
+            mensagem = 'CPF deve ter 11 dígitos ou CNPJ 14 dígitos';
+        }
+        
+        if (valido) {
+            input.style.borderColor = '#38A169';
+            input.style.backgroundColor = '#f0fff4';
+            if (docStatus && docStatus.classList.contains('doc-status')) {
+                docStatus.textContent = mensagem;
+                docStatus.style.color = '#38A169';
+            }
+        } else {
+            input.style.borderColor = '#dc3545';
+            input.style.backgroundColor = '#fff5f5';
+            if (docStatus && docStatus.classList.contains('doc-status')) {
+                docStatus.textContent = mensagem;
+                docStatus.style.color = '#dc3545';
+            }
+        }
+    }
+
+    /**
+     * Formata CEP (XXXXX-XXX)
+     */
+    formatarCEP(input) {
+        let value = input.value.replace(/\D/g, '');
+        if (value.length > 5) {
+            value = value.replace(/(\d{5})(\d)/, '$1-$2');
+        }
+        input.value = value.substring(0, 9);
+    }
+
+    /**
+     * Busca endereço pela API ViaCEP
+     */
+    async buscarCEP(cep) {
+        const cepLimpo = cep.replace(/\D/g, '');
+        const cepStatus = document.getElementById('cepStatus');
+        
+        if (cepLimpo.length !== 8) {
+            return;
+        }
+
+        cepStatus.textContent = 'Buscando CEP...';
+        cepStatus.style.color = '#2E8B57';
+
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+            const dados = await response.json();
+
+            if (dados.erro) {
+                cepStatus.textContent = 'CEP não encontrado';
+                cepStatus.style.color = '#dc3545';
+                return;
+            }
+
+            // Preenche os campos automaticamente
+            document.getElementById('rua').value = dados.logradouro || '';
+            document.getElementById('bairro').value = dados.bairro || '';
+            document.getElementById('cidade').value = dados.localidade || '';
+            document.getElementById('estado').value = dados.uf || '';
+
+            cepStatus.textContent = 'CEP encontrado!';
+            cepStatus.style.color = '#2E8B57';
+
+            // Foca no campo número
+            setTimeout(() => {
+                document.getElementById('numero').focus();
+            }, 100);
+
+        } catch (error) {
+            cepStatus.textContent = 'Erro ao buscar CEP';
+            cepStatus.style.color = '#dc3545';
+            console.error('Erro ao buscar CEP:', error);
+        }
+    }
+
+    /**
      * Configura o menu mobile responsivo
      */
     setupMobileMenu() {
         const menuToggle = document.querySelector('.menu-toggle');
         const navMenu = document.querySelector('.nav-menu');
-        const body = document.body;
         
-        if (menuToggle) {
-            // Cria overlay para menu mobile
-            const overlay = document.createElement('div');
+        if (!menuToggle || !navMenu) return;
+        
+        const body = document.body;
+        let overlay = document.querySelector('.nav-overlay');
+        
+        if (!overlay) {
+            overlay = document.createElement('div');
             overlay.className = 'nav-overlay';
-            document.body.appendChild(overlay);
-            
-            // Toggle menu ao clicar
-            menuToggle.addEventListener('click', () => {
-                const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
-                menuToggle.setAttribute('aria-expanded', !isExpanded);
-                navMenu.classList.toggle('active');
-                overlay.classList.toggle('active');
-                body.style.overflow = isExpanded ? '' : 'hidden';
-            });
-            
-            // Fecha menu ao clicar no overlay
-            overlay.addEventListener('click', () => {
-                this.closeMobileMenu(menuToggle, navMenu, overlay, body);
-            });
-            
-            // Fecha menu ao clicar em links
-            const menuLinks = navMenu.querySelectorAll('a');
-            menuLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth <= 768) {
-                        this.closeMobileMenu(menuToggle, navMenu, overlay, body);
-                    }
-                });
-            });
-            
-            // Fecha menu ao redimensionar para desktop
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 768) {
-                    this.closeMobileMenu(menuToggle, navMenu, overlay, body);
-                }
-            });
+            body.appendChild(overlay);
         }
-    }
-
-    /**
-     * Fecha o menu mobile
-     */
-    closeMobileMenu(menuToggle, navMenu, overlay, body) {
-        menuToggle.setAttribute('aria-expanded', 'false');
-        navMenu.classList.remove('active');
-        overlay.classList.remove('active');
-        body.style.overflow = '';
+        
+        const closeMenu = () => {
+            menuToggle.setAttribute('aria-expanded', 'false');
+            navMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            body.style.overflow = '';
+        };
+        
+        menuToggle.addEventListener('click', () => {
+            const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+            menuToggle.setAttribute('aria-expanded', !isExpanded);
+            navMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            body.style.overflow = isExpanded ? '' : 'hidden';
+        });
+        
+        overlay.addEventListener('click', closeMenu);
+        navMenu.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A' && window.innerWidth <= 768) closeMenu();
+        });
+        
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (window.innerWidth > 768) closeMenu();
+            }, 150);
+        });
     }
 
     /**
@@ -245,11 +383,84 @@ class OrcamentoForm {
     }
 
     /**
-     * Valida CPF (11 dígitos) ou CNPJ (14 dígitos)
+     * Valida CPF (11 dígitos) ou CNPJ (14 dígitos) com dígitos verificadores
      */
     validarDocumento(documento) {
         const docLimpo = documento.replace(/\D/g, '');
-        return docLimpo.length === 11 || docLimpo.length === 14;
+        
+        if (docLimpo.length === 11) {
+            return this.validarCPF(docLimpo);
+        } else if (docLimpo.length === 14) {
+            return this.validarCNPJ(docLimpo);
+        }
+        return false;
+    }
+
+    /**
+     * Valida CPF
+     */
+    validarCPF(cpf) {
+        // Verifica se todos os dígitos são iguais
+        if (/^(\d)\1{10}$/.test(cpf)) return false;
+
+        // Valida primeiro dígito verificador
+        let soma = 0;
+        for (let i = 0; i < 9; i++) {
+            soma += parseInt(cpf.charAt(i)) * (10 - i);
+        }
+        let resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpf.charAt(9))) return false;
+
+        // Valida segundo dígito verificador
+        soma = 0;
+        for (let i = 0; i < 10; i++) {
+            soma += parseInt(cpf.charAt(i)) * (11 - i);
+        }
+        resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpf.charAt(10))) return false;
+
+        return true;
+    }
+
+    /**
+     * Valida CNPJ
+     */
+    validarCNPJ(cnpj) {
+        // Verifica se todos os dígitos são iguais
+        if (/^(\d)\1{13}$/.test(cnpj)) return false;
+
+        // Valida primeiro dígito verificador
+        let tamanho = cnpj.length - 2;
+        let numeros = cnpj.substring(0, tamanho);
+        let digitos = cnpj.substring(tamanho);
+        let soma = 0;
+        let pos = tamanho - 7;
+        
+        for (let i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        
+        let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado !== parseInt(digitos.charAt(0))) return false;
+
+        // Valida segundo dígito verificador
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0, tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        
+        for (let i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado !== parseInt(digitos.charAt(1))) return false;
+
+        return true;
     }
 
     /**
@@ -391,6 +602,29 @@ class OrcamentoForm {
             // IMPORTANTE: Sempre reseta o botão, mesmo em caso de erro
             this.resetButtonState();
         }
+    }
+
+    // Configuração do modo noturno
+    setupDarkMode() {
+        const toggleDarkMode = () => {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+        };
+
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+        }
+
+        ['dark-mode-toggle', 'dark-mode-toggle-mobile'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.addEventListener('click', toggleDarkMode);
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'darkMode') {
+                document.body.classList.toggle('dark-mode', e.newValue === 'enabled');
+            }
+        });
     }
 }
 

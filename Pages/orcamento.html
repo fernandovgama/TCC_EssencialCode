@@ -22,6 +22,12 @@
 </head>
 
 <body>
+    <!-- Script para aplicar modo escuro imediatamente -->
+    <script>
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
     <!-- Navegação por teclado -->
     <a href="#main-content" class="skip-link">Pular para conteúdo principal</a>
 
@@ -45,10 +51,18 @@
                     <li role="none"><a href="../index.html#sobre" role="menuitem">Sobre Nós</a></li>
                     <li role="none"><a href="../index.html#produtos" role="menuitem">Produtos</a></li>
                     <li role="none"><a href="../index.html#contato" role="menuitem">Contato</a></li>
+                    <li role="none" class="mobile-only">
+                        <button id="dark-mode-toggle-mobile" class="dark-mode-btn-mobile" aria-label="Alternar modo noturno">
+                            <i class="fas fa-moon"></i> Modo Noturno
+                        </button>
+                    </li>
                 </ul>
 
                 <!-- Botão de orçamento (visível apenas no desktop) -->
                 <div class="btn-group">
+                    <button id="dark-mode-toggle" class="dark-mode-btn" aria-label="Alternar modo noturno">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <a href="./orcamento.html" class="btn btn-secondary" target="_self">Orçamento</a>
                 </div>
             </div>
@@ -79,6 +93,7 @@
                         <div class="form-group">
                             <label for="email">E-mail *</label>
                             <input type="email" id="email" name="email" required placeholder="seu@email.com">
+                            <small class="email-status" id="emailStatus"></small>
                         </div>
 
                         <div class="form-group">
@@ -90,12 +105,72 @@
                             <label for="documento">CPF ou CNPJ *</label>
                             <input type="text" id="documento" name="documento" required
                                 placeholder="Digite seu CPF ou CNPJ">
+                            <small class="doc-status" id="docStatus"></small>
                         </div>
 
-                        <div class="form-group full-width">
-                            <label for="endereco">Endereço Completo *</label>
-                            <input type="text" id="endereco" name="endereco" required
-                                placeholder="Rua, número, bairro, cidade - Estado">
+                        <div class="form-group">
+                            <label for="cep">CEP *</label>
+                            <input type="text" id="cep" name="cep" required placeholder="00000-000" maxlength="9">
+                            <small class="cep-status" id="cepStatus"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rua">Rua/Logradouro *</label>
+                            <input type="text" id="rua" name="rua" required placeholder="Nome da rua">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="numero">Número *</label>
+                            <input type="text" id="numero" name="numero" required placeholder="Nº">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="complemento">Complemento</label>
+                            <input type="text" id="complemento" name="complemento" placeholder="Apto, Bloco, etc">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bairro">Bairro *</label>
+                            <input type="text" id="bairro" name="bairro" required placeholder="Bairro">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cidade">Cidade *</label>
+                            <input type="text" id="cidade" name="cidade" required placeholder="Cidade">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="estado">Estado *</label>
+                            <select id="estado" name="estado" required>
+                                <option value="">Selecione</option>
+                                <option value="AC">AC</option>
+                                <option value="AL">AL</option>
+                                <option value="AP">AP</option>
+                                <option value="AM">AM</option>
+                                <option value="BA">BA</option>
+                                <option value="CE">CE</option>
+                                <option value="DF">DF</option>
+                                <option value="ES">ES</option>
+                                <option value="GO">GO</option>
+                                <option value="MA">MA</option>
+                                <option value="MT">MT</option>
+                                <option value="MS">MS</option>
+                                <option value="MG">MG</option>
+                                <option value="PA">PA</option>
+                                <option value="PB">PB</option>
+                                <option value="PR">PR</option>
+                                <option value="PE">PE</option>
+                                <option value="PI">PI</option>
+                                <option value="RJ">RJ</option>
+                                <option value="RN">RN</option>
+                                <option value="RS">RS</option>
+                                <option value="RO">RO</option>
+                                <option value="RR">RR</option>
+                                <option value="SC">SC</option>
+                                <option value="SP">SP</option>
+                                <option value="SE">SE</option>
+                                <option value="TO">TO</option>
+                            </select>
                         </div>
 
                         <div class="form-group full-width">
@@ -218,15 +293,29 @@
                 </div>
 
                 <div class="footer-section">
+                    <h3>Contato</h3>
                     <div class="contact-info">
                         <p><i class="fas fa-envelope"></i> contato@ecobytes.com</p>
                         <p><i class="fas fa-phone"></i> (11) 95157-2452</p>
-                        <p><i class="fas fa-map-marker-alt"></i> Rua das Sustentáveis, 770 - Vila Ecos</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Av. Paulista, São Paulo - SP</p>
+                    </div>
+                    <div class="map-container">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.1976686465376!2d-46.63332092377056!3d-23.561684778787456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce59c8da0aa315%3A0xd59f9431f2c9776a!2sAv.%20Paulista%2C%20S%C3%A3o%20Paulo%20-%20SP!5e0!3m2!1spt-BR!2sbr!4v1701878400000!5m2!1spt-BR!2sbr" 
+                            width="100%" 
+                            height="200" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="Localização Ecobytes">
+                        </iframe>
                     </div>
                 </div>
             </div>
 
             <div class="footer-bottom">
+                <img src="../Assets/imagotipo_20251203_231509_0000.png" alt="Logo Essencial Code" class="footer-logo">
                 <p>&copy; 2025 Essencial Code. Todos os direitos reservados.</p>
             </div>
         </div>

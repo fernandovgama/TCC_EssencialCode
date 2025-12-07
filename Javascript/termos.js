@@ -9,6 +9,7 @@ class TermosPage {
     init() {
         this.setupMobileMenu();
         this.updateDataAtualizacao();
+        this.setupDarkMode();
     }
 
     /**
@@ -17,52 +18,89 @@ class TermosPage {
     setupMobileMenu() {
         const menuToggle = document.querySelector('.menu-toggle');
         const navMenu = document.querySelector('.nav-menu');
-        const body = document.body;
         
-        if (menuToggle) {
-            const overlay = document.createElement('div');
+        if (!menuToggle || !navMenu) return;
+        
+        const body = document.body;
+        let overlay = document.querySelector('.nav-overlay');
+        
+        if (!overlay) {
+            overlay = document.createElement('div');
             overlay.className = 'nav-overlay';
-            document.body.appendChild(overlay);
-            
-            menuToggle.addEventListener('click', () => {
-                const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
-                menuToggle.setAttribute('aria-expanded', !isExpanded);
-                navMenu.classList.toggle('active');
-                overlay.classList.toggle('active');
-                body.style.overflow = isExpanded ? '' : 'hidden';
-            });
-            
-            overlay.addEventListener('click', () => {
-                this.closeMobileMenu(menuToggle, navMenu, overlay, body);
-            });
-            
-            const menuLinks = navMenu.querySelectorAll('a');
-            menuLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth <= 768) {
-                        this.closeMobileMenu(menuToggle, navMenu, overlay, body);
-                    }
-                });
-            });
-            
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 768) {
-                    this.closeMobileMenu(menuToggle, navMenu, overlay, body);
-                }
-            });
+            body.appendChild(overlay);
         }
+        
+        const closeMenu = () => {
+            menuToggle.setAttribute('aria-expanded', 'false');
+            navMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            body.style.overflow = '';
+        };
+        
+        menuToggle.addEventListener('click', () => {
+            const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+            menuToggle.setAttribute('aria-expanded', !isExpanded);
+            navMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            body.style.overflow = isExpanded ? '' : 'hidden';
+        });
+        
+        overlay.addEventListener('click', closeMenu);
+        navMenu.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A' && window.innerWidth <= 768) closeMenu();
+        });
+        
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (window.innerWidth > 768) closeMenu();
+            }, 150);
+        });
     }
 
-    closeMobileMenu(menuToggle, navMenu, overlay, body) {
-        menuToggle.setAttribute('aria-expanded', 'false');
-        navMenu.classList.remove('active');
-        overlay.classList.remove('active');
-        body.style.overflow = '';
+    // Configuração do modo noturno
+    setupDarkMode() {
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const darkModeToggleMobile = document.getElementById('dark-mode-toggle-mobile');
+        
+        // Aplica tema salvo
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+        }
+
+        const toggleDarkMode = () => {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+            
+            // Atualiza ícones
+            const icon = isDark ? 'fa-sun' : 'fa-moon';
+            const oldIcon = isDark ? 'fa-moon' : 'fa-sun';
+            
+            document.querySelectorAll('#dark-mode-toggle i, #dark-mode-toggle-mobile i').forEach(i => {
+                i.classList.remove(oldIcon);
+                i.classList.add(icon);
+            });
+        };
+
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+        }
+
+        if (darkModeToggleMobile) {
+            darkModeToggleMobile.addEventListener('click', toggleDarkMode);
+        }
+
+        // Sincroniza entre abas
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'darkMode') {
+                document.body.classList.toggle('dark-mode', e.newValue === 'enabled');
+            }
+        });
     }
 }
 
 // Politica de privacidade
-
 function setPolitica(aceita) {
     const campo = document.getElementById('politicaMini');
     const btnEnviar = document.querySelector('button[type="submit"]');

@@ -16,6 +16,12 @@
 </head>
 
 <body>
+    <!-- Script para aplicar modo escuro imediatamente -->
+    <script>
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
     <!-- Navegação por teclado -->
     <a href="#main-content" class="skip-link">Pular para conteúdo principal</a>
 
@@ -38,14 +44,22 @@
             <!-- Menu de navegação principal -->
             <ul class="nav-menu" id="nav-menu" role="menubar">
                 <li role="none"><a href="#home" role="menuitem">Início</a></li>
-                <li role="none"><a href="#sobre" role="menuitem">Sobre Nós</a></li>
                 <li role="none"><a href="#produtos" role="menuitem">Produtos</a></li>
+                <li role="none"><a href="#sobre" role="menuitem">Sobre Nós</a></li>
                 <li role="none"><a href="#contato" role="menuitem">Contato</a></li>
+                <li role="none" class="mobile-only">
+                    <button id="dark-mode-toggle-mobile" class="dark-mode-btn-mobile" aria-label="Alternar modo noturno">
+                        <i class="fas fa-moon"></i> Modo Noturno
+                    </button>
+                </li>
             </ul>
             
             <!-- Botão de call-to-action para orçamento (visível apenas no desktop) -->
             <div class="btn-group">
-                <a href="./Pages/orcamento.html" class="btn btn-secondary" target="_blank">Orçamento</a>
+                <button id="dark-mode-toggle" class="dark-mode-btn" aria-label="Alternar modo noturno">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="./Pages/orcamento.html" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Orçamento</a>
             </div>
 
         </div>
@@ -120,7 +134,7 @@
                                 <li><i class="fas fa-check"></i> Tintas Ecológicas para personalização</li>
                             </ul>
                             <div class="product-actions">
-                                <a href="./Pages/orcamento.html" class="btn btn-primary" target="_blank">Solicitar Orçamento</a>
+                                <a href="./Pages/orcamento.html" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Solicitar Orçamento</a>
                             </div>
                         </div>
                     </article>
@@ -136,7 +150,7 @@
                                 <li><i class="fas fa-check"></i> Tintas Ecológicas para personalização</li>
                             </ul> 
                             <div class="product-actions">
-                                <a href="./Pages/orcamento.html" class="btn btn-primary" target="_blank">Solicitar Orçamento</a>
+                                <a href="./Pages/orcamento.html" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Solicitar Orçamento</a>
                             </div>
                         </div>
                     </article>
@@ -152,7 +166,7 @@
                                 <li><i class="fas fa-check"></i> Tintas Ecológicas para personalização</li>
                             </ul>
                             <div class="product-actions">
-                                <a href="./Pages/orcamento.html" class="btn btn-primary" target="_blank">Solicitar Orçamento</a>
+                                <a href="./Pages/orcamento.html" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Solicitar Orçamento</a>
                             </div>
                         </div>
                     </article>
@@ -168,7 +182,7 @@
                                 <li><i class="fas fa-check"></i> Tintas Ecológicas para personalização</li>
                             </ul>
                             <div class="product-actions">
-                                <a href="./Pages/orcamento.html" class="btn btn-primary" target="_blank">Solicitar Orçamento</a>
+                                <a href="./Pages/orcamento.html" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Solicitar Orçamento</a>
                             </div>
                         </div>
                     </article>
@@ -270,7 +284,7 @@
                     <p>Cuidar do futuro começa hoje.</p>
 
                     <div class="social-links">
-                        <a href="https://www.instagram.com/ecobytes_oficial" target="_blank" aria-label="Instagram">
+                        <a href="https://www.instagram.com/ecobytes_oficial" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
                         <a href="#" aria-label="LinkedIn">
@@ -294,19 +308,44 @@
                 </div>
 
                 <div class="footer-section" id="contato">
+                    <h3>Contato</h3>
                     <div class="contact-info">
                         <p><i class="fas fa-envelope"></i> contato@ecobytes.com</p>
                         <p><i class="fas fa-phone"></i> (11) 95157-2452</p>
-                        <p><i class="fas fa-map-marker-alt"></i> Rua das Sustentáveis, 770 - Vila Ecos</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Av. Paulista, São Paulo - SP</p>
+                    </div>
+                    <div class="map-container">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.1976686465376!2d-46.63332092377056!3d-23.561684778787456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce59c8da0aa315%3A0xd59f9431f2c9776a!2sAv.%20Paulista%2C%20S%C3%A3o%20Paulo%20-%20SP!5e0!3m2!1spt-BR!2sbr!4v1701878400000!5m2!1spt-BR!2sbr" 
+                            width="100%" 
+                            height="200" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="Localização Ecobytes">
+                        </iframe>
                     </div>
                 </div>
             </div>
 
             <div class="footer-bottom">
+                <img src="./Assets/imagotipo_20251203_231509_0000.png" alt="Logo Essencial Code" class="footer-logo">
                 <p>&copy; 2025 Essencial Code. Todos os direitos reservados.</p>
             </div>
         </div>
     </footer>
+
+      <script>
+        (function (d) {
+            var s = d.createElement("script");
+            s.setAttribute("data-account", "xGkYbLzPsv");
+            s.setAttribute("src", "https://cdn.userway.org/widget.js");
+            s.setAttribute("data-position", "5");
+            s.setAttribute("data-color", "#2E8B57");
+            (d.body || d.head).appendChild(s);
+        })(document);
+    </script>
 
     <script src="./Javascript/script.js"></script>
 </body>
