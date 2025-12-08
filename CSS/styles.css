@@ -196,21 +196,22 @@ body {
 }
 
 .dark-mode-btn-mobile {
-    width: 100%;
-    padding: 1rem;
+    width: 80%;
+    padding: 0.8rem 1rem;
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.3);
     color: white;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     transition: all 0.3s ease;
     margin-top: 1rem;
+    justify-self: center;
 }
 
 .dark-mode-btn-mobile:hover {
@@ -218,7 +219,7 @@ body {
 }
 
 .dark-mode-btn-mobile i {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 body.dark-mode .dark-mode-btn-mobile .fa-moon::before {
@@ -227,14 +228,19 @@ body.dark-mode .dark-mode-btn-mobile .fa-moon::before {
 
 /* Responsividade para tablets e mobile */
 @media (max-width: 768px) {
+    /* Esconde o nome "Ecobytes" no mobile */
+    .logo span {
+        display: none;
+    }
+    
+    /* Esconde o botão de orçamento no mobile (só aparece no menu hamburguer) */
+    .btn-group {
+        display: none !important;
+    }
+    
     /* Mostra o botão hamburguer no mobile */
     .menu-toggle {
         display: block;
-    }
-    
-    /* Esconde o botão de orçamento no desktop quando em mobile */
-    .btn-group {
-        display: none;
     }
     
     /* Esconde o botão de modo noturno do desktop no mobile */
@@ -247,17 +253,26 @@ body.dark-mode .dark-mode-btn-mobile .fa-moon::before {
         display: list-item;
     }
     
-    /* Mostra o botão de orçamento no menu mobile */
-    .nav-menu-mobile-btn {
+    /* Estiliza o botão de orçamento no menu mobile */
+    .mobile-only .btn-secondary {
         display: block;
-        margin-top: 0.5rem;
-        padding: 0;
+        width: 100%;
+        padding: 1.2rem 1.5rem;
+        text-align: left;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        text-decoration: none;
+        border-radius: 0;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-weight: 600;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+        box-sizing: border-box;
     }
     
-    .nav-menu-mobile-btn .btn {
-        width: 100%;
-        justify-content: center;
-        padding: 1rem;
+    .mobile-only .btn-secondary:hover {
+        background-color: rgba(255, 255, 255, 0.25);
     }
     
     /* Menu mobile - sobreposição */
