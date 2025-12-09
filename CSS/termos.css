@@ -1,9 +1,17 @@
+/* Otimizações de performance */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 body {
     background-color: #f8fafc;
 }
 
 /* Header da página */
 .termos-header {
+    transform: translateZ(0);
+    backface-visibility: hidden;
     background: linear-gradient(135deg, #2E8B57, #1F6B41);
     color: white;
     padding: 6rem 0 3rem; 
@@ -231,6 +239,8 @@ body {
     margin-bottom: 0.75rem;
     color: #1a202c;
     font-weight: 600;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .contato-info i {

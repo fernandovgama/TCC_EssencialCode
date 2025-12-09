@@ -206,8 +206,6 @@ class EcoBytesApp {
 
         const elementsToAnimate = document.querySelectorAll('.benefit-card, .product-card, .about-feature, .newsletter-content, .cta-content');
         elementsToAnimate.forEach((element, index) => {
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(30px)';
             setTimeout(() => {
                 observer.observe(element);
             }, index * 50);

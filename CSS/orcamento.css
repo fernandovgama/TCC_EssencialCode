@@ -1,4 +1,10 @@
 /* Base do formulário */
+/* Otimizações de performance */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 .header {
     position: fixed;
     top: 0;
@@ -6,6 +12,8 @@
     background: #2E8B57;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .nav-container {
