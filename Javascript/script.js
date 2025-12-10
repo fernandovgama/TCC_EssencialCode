@@ -190,26 +190,7 @@ class EcoBytesApp {
     }
 
     setupIntersectionObserver() {
-        const observerOptions = {
-            threshold: 0.15,
-            rootMargin: '0px 0px -80px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        const elementsToAnimate = document.querySelectorAll('.benefit-card, .product-card, .about-feature, .newsletter-content, .cta-content');
-        elementsToAnimate.forEach((element, index) => {
-            setTimeout(() => {
-                observer.observe(element);
-            }, index * 50);
-        });
+        // Animação de aparição desabilitada
     }
 
     // Configuração do modo noturno
